@@ -7,6 +7,7 @@ import os
 from src.stats import count, mean, median, mode, variance, standard_deviation
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results', 'p1')
+METRICS = ['Count', 'Mean', 'Median', 'Mode', 'Var', 'Std', 'Time']
 
 
 def read_data(filepath):
@@ -56,15 +57,8 @@ def compute_statistics(filepath):
     return results
 
 
-def main():
-    """Main entry point."""
-    if len(sys.argv) < 2:
-        print("Usage: python -m compute_statistics <filepath1> [filepath2] ...")
-        sys.exit(1)
-
-    filepaths = sys.argv[1:]
-
-    # Compute statistics for all files
+def process_files(filepaths):
+    """Process multiple files and return results with valid filenames."""
     all_results = []
     valid_filenames = []
     skipped_files = []
@@ -77,29 +71,25 @@ def main():
             print(f"Warning: Skipping file - {e}")
             skipped_files.append(filepath)
 
-    if not all_results:
-        print("Error: No valid files to process")
-        sys.exit(1)
+    return all_results, valid_filenames, skipped_files
 
-    # Build header and rows
-    headers = [''] + valid_filenames
-    metrics = ['Count', 'Mean', 'Median', 'Mode', 'Var', 'Std', 'Time']
 
-    # Print and collect output
+def format_results(all_results, valid_filenames):
+    """Format results as tab-separated lines."""
     output_lines = []
-    header_line = '\t'.join(headers)
+    header_line = '\t'.join([''] + valid_filenames)
     output_lines.append(header_line)
-    print(header_line)
 
-    for metric in metrics:
+    for metric in METRICS:
         row = [metric] + [str(results[metric]) for results in all_results]
-        row_line = '\t'.join(row)
-        output_lines.append(row_line)
-        print(row_line)
+        output_lines.append('\t'.join(row))
 
-    # Write results to file
-    output_filename = "StatisticsResults.txt"
-    output_path = os.path.join(RESULTS_DIR, output_filename)
+    return output_lines
+
+
+def save_results(output_lines):
+    """Save results to file."""
+    output_path = os.path.join(RESULTS_DIR, "StatisticsResults.txt")
 
     try:
         os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -109,6 +99,27 @@ def main():
     except PermissionError:
         print(f"\nError: Permission denied writing to {output_path}")
         sys.exit(1)
+
+
+def main():
+    """Main entry point."""
+    if len(sys.argv) < 2:
+        print("Usage: python -m compute_statistics <filepath1> [filepath2] ...")
+        sys.exit(1)
+
+    filepaths = sys.argv[1:]
+    all_results, valid_filenames, skipped_files = process_files(filepaths)
+
+    if not all_results:
+        print("Error: No valid files to process")
+        sys.exit(1)
+
+    output_lines = format_results(all_results, valid_filenames)
+
+    for line in output_lines:
+        print(line)
+
+    save_results(output_lines)
 
     if skipped_files:
         print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
