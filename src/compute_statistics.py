@@ -15,6 +15,7 @@ def read_data(filepath):
         raise FileNotFoundError(f"File not found: {filepath}")
 
     data = []
+    skipped_lines = []
     with open(filepath, 'r', encoding='utf-8') as file:
         for line_num, line in enumerate(file, 1):
             line = line.strip()
@@ -22,10 +23,12 @@ def read_data(filepath):
                 continue
             try:
                 data.append(float(line))
-            except ValueError as exc:
-                raise ValueError(
-                    f"Invalid data at line {line_num} in {filepath}: '{line}'"
-                ) from exc
+            except ValueError:
+                skipped_lines.append((line_num, line))
+
+    if skipped_lines:
+        for line_num, line in skipped_lines:
+            print(f"Warning: Skipped invalid data at line {line_num} in {filepath}: '{line}'")
 
     if not data:
         raise ValueError(f"File is empty or contains no valid data: {filepath}")
@@ -60,22 +63,26 @@ def main():
         sys.exit(1)
 
     filepaths = sys.argv[1:]
-    filenames = [os.path.basename(fp) for fp in filepaths]
 
     # Compute statistics for all files
     all_results = []
+    valid_filenames = []
+    skipped_files = []
+
     for filepath in filepaths:
         try:
             all_results.append(compute_statistics(filepath))
-        except FileNotFoundError as e:
-            print(f"Error: {e}")
-            sys.exit(1)
-        except ValueError as e:
-            print(f"Error: {e}")
-            sys.exit(1)
+            valid_filenames.append(os.path.basename(filepath))
+        except (FileNotFoundError, ValueError) as e:
+            print(f"Warning: Skipping file - {e}")
+            skipped_files.append(filepath)
+
+    if not all_results:
+        print("Error: No valid files to process")
+        sys.exit(1)
 
     # Build header and rows
-    headers = [''] + filenames
+    headers = [''] + valid_filenames
     metrics = ['Count', 'Mean', 'Median', 'Mode', 'Var', 'Std', 'Time']
 
     # Print and collect output
@@ -102,6 +109,9 @@ def main():
     except PermissionError:
         print(f"\nError: Permission denied writing to {output_path}")
         sys.exit(1)
+
+    if skipped_files:
+        print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
 
 
 if __name__ == '__main__':
