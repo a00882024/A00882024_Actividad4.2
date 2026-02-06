@@ -30,7 +30,7 @@ pytest
 pylint src/ tests/
 ```
 
-## Run Compute Statistics
+## P1 Compute Statistics
 
 Run with one or more data files (one number per line):
 
@@ -45,6 +45,22 @@ python -m src.compute_statistics data/file1.txt data/file2.txt
 ```
 
 Results are saved to `results/p1/StatisticsResults.txt`.
+
+### Design Decisions
+
+**File naming (`compute_statistics.py` vs `computeStatistics.py`):**
+
+The script is named `compute_statistics.py` using snake_case instead of `computeStatistics.py` (camelCase) to comply with PEP8 naming conventions. PEP8 specifies that module names should be lowercase with underscores (snake_case). Since Req8 requires PEP8 compliance, we prioritize this standard Python convention.
+
+**File location (`src/` folder):**
+
+The script is located in the `src/` folder rather than the project root to follow standard Python project organization practices. This separation:
+- Keeps source code organized and separate from configuration files, tests, and documentation
+- Makes the codebase easier to maintain and navigate
+- Allows for proper module imports between source files
+- Follows common Python project structure conventions
+
+The script can still be executed from the command line using `python -m src.compute_statistics`.
 
 ### Screenshots
 
