@@ -5,42 +5,16 @@ import time
 import os
 
 from src.stats import count, mean, median, mode, variance, standard_deviation
+from src.utils import read_data, save_results, print_results, print_skipped_files
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results', 'p1')
 METRICS = ['Count', 'Mean', 'Median', 'Mode', 'Var', 'Std', 'Time']
 
 
-def read_data(filepath):
-    """Read numbers from a file (one number per line)."""
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"File not found: {filepath}")
-
-    data = []
-    skipped_lines = []
-    with open(filepath, 'r', encoding='utf-8') as file:
-        for line_num, line in enumerate(file, 1):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                data.append(float(line))
-            except ValueError:
-                skipped_lines.append((line_num, line))
-
-    if skipped_lines:
-        for line_num, line in skipped_lines:
-            print(f"Warning: Skipped invalid data at line {line_num} in {filepath}: '{line}'")
-
-    if not data:
-        raise ValueError(f"File is empty or contains no valid data: {filepath}")
-
-    return data
-
-
 def compute_statistics(filepath):
     """Compute statistics for a single file and return results."""
     start_time = time.time()
-    data = read_data(filepath)
+    data = read_data(filepath, converter=float)
 
     results = {
         'Count': count(data),
@@ -87,20 +61,6 @@ def format_results(all_results, valid_filenames):
     return output_lines
 
 
-def save_results(output_lines):
-    """Save results to file."""
-    output_path = os.path.join(RESULTS_DIR, "StatisticsResults.txt")
-
-    try:
-        os.makedirs(RESULTS_DIR, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as file:
-            file.write('\n'.join(output_lines))
-        print(f"\nResults saved to: {output_path}")
-    except PermissionError:
-        print(f"\nError: Permission denied writing to {output_path}")
-        sys.exit(1)
-
-
 def main():
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -116,13 +76,12 @@ def main():
 
     output_lines = format_results(all_results, valid_filenames)
 
-    for line in output_lines:
-        print(line)
+    print_results(output_lines)
 
-    save_results(output_lines)
+    output_path = os.path.join(RESULTS_DIR, "StatisticsResults.txt")
+    save_results(output_lines, output_path)
 
-    if skipped_files:
-        print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
+    print_skipped_files(skipped_files)
 
 
 if __name__ == '__main__':

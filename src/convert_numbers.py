@@ -5,41 +5,20 @@ import time
 import os
 
 from src.converters import decimal_to_binary, decimal_to_hexadecimal
+from src.utils import read_data, save_results, print_results, print_skipped_files
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results', 'p2')
 
 
-def read_data(filepath):
-    """Read numbers from a file (one number per line)."""
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"File not found: {filepath}")
-
-    data = []
-    skipped_lines = []
-    with open(filepath, 'r', encoding='utf-8') as file:
-        for line_num, line in enumerate(file, 1):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                data.append(int(float(line)))
-            except ValueError:
-                skipped_lines.append((line_num, line))
-
-    if skipped_lines:
-        for line_num, line in skipped_lines:
-            print(f"Warning: Skipped invalid data at line {line_num} in {filepath}: '{line}'")
-
-    if not data:
-        raise ValueError(f"File is empty or contains no valid data: {filepath}")
-
-    return data
+def to_int(value):
+    """Convert string to integer (via float for decimal support)."""
+    return int(float(value))
 
 
 def convert_numbers(filepath):
     """Convert all numbers in a file to binary and hexadecimal."""
     start_time = time.time()
-    data = read_data(filepath)
+    data = read_data(filepath, converter=to_int)
 
     results = []
     for number in data:
@@ -88,20 +67,6 @@ def format_results(all_results):
     return output_lines
 
 
-def save_results(output_lines):
-    """Save results to file."""
-    output_path = os.path.join(RESULTS_DIR, "ConversionResults.txt")
-
-    try:
-        os.makedirs(RESULTS_DIR, exist_ok=True)
-        with open(output_path, 'w', encoding='utf-8') as file:
-            file.write('\n'.join(output_lines))
-        print(f"\nResults saved to: {output_path}")
-    except PermissionError:
-        print(f"\nError: Permission denied writing to {output_path}")
-        sys.exit(1)
-
-
 def main():
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -117,13 +82,12 @@ def main():
 
     output_lines = format_results(all_results)
 
-    for line in output_lines:
-        print(line)
+    print_results(output_lines)
 
-    save_results(output_lines)
+    output_path = os.path.join(RESULTS_DIR, "ConversionResults.txt")
+    save_results(output_lines, output_path)
 
-    if skipped_files:
-        print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
+    print_skipped_files(skipped_files)
 
 
 if __name__ == '__main__':
