@@ -68,3 +68,31 @@ def print_skipped_files(skipped_files):
     """Print summary of skipped files."""
     if skipped_files:
         print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
+
+
+def run_main(usage, process_fn, format_fn, output_path):
+    """
+    Common main function logic for file processing scripts.
+
+    Args:
+        usage: Usage string to display if no arguments provided
+        process_fn: Function to process filepaths, returns (results, skipped_files)
+        format_fn: Function to format results into output lines
+        output_path: Path to save results
+    """
+    if len(sys.argv) < 2:
+        print(usage)
+        sys.exit(1)
+
+    filepaths = sys.argv[1:]
+    all_results, skipped_files = process_fn(filepaths)
+
+    if not all_results:
+        print("Error: No valid files to process")
+        sys.exit(1)
+
+    output_lines = format_fn(all_results)
+
+    print_results(output_lines)
+    save_results(output_lines, output_path)
+    print_skipped_files(skipped_files)

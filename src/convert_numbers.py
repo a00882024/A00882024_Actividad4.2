@@ -1,11 +1,10 @@
 """Script to convert numbers from decimal to binary and hexadecimal."""
 
-import sys
 import time
 import os
 
 from src.converters import decimal_to_binary, decimal_to_hexadecimal
-from src.utils import read_data, save_results, print_results, print_skipped_files
+from src.utils import read_data, run_main
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results', 'p2')
 
@@ -69,25 +68,13 @@ def format_results(all_results):
 
 def main():
     """Main entry point."""
-    if len(sys.argv) < 2:
-        print("Usage: python -m src.convert_numbers <filepath1> [filepath2] ...")
-        sys.exit(1)
-
-    filepaths = sys.argv[1:]
-    all_results, skipped_files = process_files(filepaths)
-
-    if not all_results:
-        print("Error: No valid files to process")
-        sys.exit(1)
-
-    output_lines = format_results(all_results)
-
-    print_results(output_lines)
-
     output_path = os.path.join(RESULTS_DIR, "ConversionResults.txt")
-    save_results(output_lines, output_path)
-
-    print_skipped_files(skipped_files)
+    run_main(
+        usage="Usage: python -m src.convert_numbers <filepath1> [filepath2] ...",
+        format_fn=format_results,
+        process_fn=process_files,
+        output_path=output_path,
+    )
 
 
 if __name__ == '__main__':
