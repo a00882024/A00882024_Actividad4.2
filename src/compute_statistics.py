@@ -5,7 +5,7 @@ import time
 import os
 
 from src.stats import count, mean, median, mode, variance, standard_deviation
-from src.utils import read_data, save_results, print_results, print_skipped_files
+from src.utils import read_data, save_results, print_results, print_skipped_files, get_output_path
 
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', 'results', 'p1')
 METRICS = ['Count', 'Mean', 'Median', 'Mode', 'Var', 'Std', 'Time']
@@ -78,7 +78,8 @@ def main():
 
     print_results(output_lines)
 
-    output_path = os.path.join(RESULTS_DIR, "StatisticsResults.txt")
+    base_output_path = os.path.join(RESULTS_DIR, "StatisticsResults.txt")
+    output_path = get_output_path(base_output_path, filepaths)
     save_results(output_lines, output_path)
 
     print_skipped_files(skipped_files)

@@ -52,7 +52,8 @@ def save_results(output_lines, output_path):
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         with open(output_path, 'w', encoding='utf-8') as file:
             file.write('\n'.join(output_lines))
-        print(f"\nResults saved to: {output_path}")
+        relative_path = os.path.relpath(output_path)
+        print(f"\nResults saved to: {relative_path}")
     except PermissionError:
         print(f"\nError: Permission denied writing to {output_path}")
         sys.exit(1)
@@ -68,6 +69,24 @@ def print_skipped_files(skipped_files):
     """Print summary of skipped files."""
     if skipped_files:
         print(f"\nSkipped {len(skipped_files)} file(s): {', '.join(skipped_files)}")
+
+
+def get_output_path(output_path, filepaths):
+    """
+    Get the output path, appending input filename if single file.
+
+    Args:
+        output_path: Base output path
+        filepaths: List of input filepaths
+
+    Returns:
+        Modified output path
+    """
+    if len(filepaths) == 1:
+        input_name = os.path.splitext(os.path.basename(filepaths[0]))[0]
+        base, ext = os.path.splitext(output_path)
+        return f"{base}_{input_name}{ext}"
+    return output_path
 
 
 def run_main(usage, process_fn, format_fn, output_path):
@@ -93,6 +112,8 @@ def run_main(usage, process_fn, format_fn, output_path):
 
     output_lines = format_fn(all_results)
 
+    final_output_path = get_output_path(output_path, filepaths)
+
     print_results(output_lines)
-    save_results(output_lines, output_path)
+    save_results(output_lines, final_output_path)
     print_skipped_files(skipped_files)
