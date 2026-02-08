@@ -1,4 +1,4 @@
-# A00882024_Actividad4.2
+# Pruebas de Software y Aseguramiento de la Calidad: 4.2 Ejercicio de Programación 1
 
 - **Name:** Joel Garcia Martinez
 - **Matricula:** A00882024
