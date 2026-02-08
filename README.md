@@ -1,7 +1,7 @@
 # A00882024_Actividad4.2
 
-**Name:** Joel Garcia Martinez
-**Matricula:** A00882024
+- **Name:** Joel Garcia Martinez
+- **Matricula:** A00882024
 
 ## Setup
 
