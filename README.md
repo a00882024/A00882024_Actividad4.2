@@ -30,6 +30,18 @@ pytest
 pylint src/ tests/
 ```
 
+### Test Execution
+
+Screenshot demonstrating pytest execution with all tests passing:
+
+![test-execution](https://github.com/a00882024/A00882024_Actividad4.2/blob/main/results/test_execution.png)
+
+### Pylint Execution
+
+Screenshot demonstrating pylint execution with 10.00/10 score:
+
+![pylint-execution](https://github.com/a00882024/A00882024_Actividad4.2/blob/main/results/pylint_execution.png)
+
 ## P1 Compute Statistics
 
 Run with one or more data files (one number per line):
