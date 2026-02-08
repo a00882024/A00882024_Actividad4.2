@@ -63,6 +63,9 @@ class TestMode(unittest.TestCase):
     def test_mode_all_same(self):
         self.assertEqual(mode([5, 5, 5]), 5)
 
+    def test_mode_all_unique(self):
+        self.assertEqual(mode([1, 2, 3]), None)
+
 
 class TestVariance(unittest.TestCase):
     """Tests for the variance function."""

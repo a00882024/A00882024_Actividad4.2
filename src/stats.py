@@ -29,7 +29,19 @@ def median(data):
 
 
 def mode(data):
-    """Calculate the mode."""
+    """
+    Calculate the mode.
+
+    Returns the most common element in a list
+
+    mode([1, 1, 2]) => 1
+
+    mode([2, 2, 2]) => 2
+
+    When all elements are unique returns None
+
+    mode([1, 2, 3]) => None
+    """
     counts = {}
     max_key = None
     max_count = 0
@@ -39,6 +51,9 @@ def mode(data):
         if counts[value] > max_count:
             max_count = counts[value]
             max_key = value
+
+    if max_count == 1:
+        return None
 
     return max_key
 
